@@ -10,7 +10,7 @@ st.markdown("""
     .main { background-color: #1a1a2e; color: #ffffff; }
     .stTextInput > div > div > input { background-color: #16213e; color: white; border-radius: 10px; }
     </style>
-""", unsafe_allow_key=True)
+""", unsafe_allow_html=True)
 
 st.title("💃 Shushi - Aapki Smart & Mazakiya AI Friend")
 
@@ -72,7 +72,7 @@ if api_key:
         <button onclick="startListening()" style="padding:10px; background-color:#e94560; color:white; border:none; border-radius:5px; cursor:pointer;">
             🎤 Turn ON Voice Wake-Word ("Shushi")
         </button>
-    """, unsafe_allow_key=True)
+    """, unsafe_allow_html=True)
 
     # User Chat Input
     user_input = st.chat_input("Shushi se baat karein...")
