@@ -12,6 +12,7 @@ st.set_page_config(
 # Hinata ki photo ko error-free load karne ke liye
 hinata_avatar = Image.open("9fc665b42fb26df41b551260b9e2c11c.jpg")
 
+
 # Chat message me avatar set karne ke liye yeh use hoga
 with st.chat_message("assistant", avatar=hinata_avatar):
     st.write("Hey! Main Shushii hoon.")
