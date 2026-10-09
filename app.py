@@ -10,8 +10,7 @@ st.set_page_config(
 )
 
 # ==========================================
-# HINATA AVATAR CONFIGURATION
-# Yahan apni photo ka file name ya URL daal dein
+# 9fc665b42fb26df41b551260b9e2c11c.jpg
 # ==========================================
 SHUSHII_AVATAR = "hinata.jpg"  # Example: "hinata.jpg" ya koi image ka link
 
