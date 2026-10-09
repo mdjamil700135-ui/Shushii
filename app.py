@@ -1,29 +1,36 @@
+import os
 import streamlit as st
 import google.generativeai as genai
 
-# Streamlit UI Configuration
-st.set_page_config(page_title="Shushi - AI Assistant", page_icon="💃", layout="centered")
+# Page Config
+st.set_page_config(
+    page_title="Shushii - AI Friend",
+    page_icon="💃",
+    layout="centered"
+)
 
-# --- Custom CSS Design ---
+# Custom Styling
 st.markdown("""
-    <style>
+<style>
     .main { background-color: #1a1a2e; color: #ffffff; }
-    .stTextInput > div > div > input { background-color: #16213e; color: white; border-radius: 10px; }
-    </style>
+    .stTextInput > div > div > input { background-color: #16213e; color: #ffffff; }
+</style>
 """, unsafe_allow_html=True)
 
 st.title("💃 Shushi - Aapki Smart & Mazakiya AI Friend")
 
-# --- 1. Photo Upload Section ---
+# --- 1. Photo Upload & Sidebar Section ---
 st.sidebar.header("Shushi Ki Profile Photo")
-uploaded_photo = st.sidebar.file_uploader("Apni pasand ki photo daalein:", type=["jpg", "png", "jpeg"])
+uploaded_photo = st.sidebar.file_uploader("Apni photo dalein", type=["jpg", "png", "jpeg"])
 
 if uploaded_photo is not None:
-    st.sidebar.image(uploaded_photo, caption="Shushi", use_column_width=True)
+    st.sidebar.image(uploaded_photo, caption="Shushi", use_container_width=True)
 else:
     # Default Avatar
-    st.sidebar.image("https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&auto=format&fit=crop&q=60", caption="Shushi")
+    st.sidebar.image("https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&auto=format&fit=crop&q=60", caption="Shushi", use_container_width=True)
 
+# --- 2. API Key Automatic Fetch Logic ---
+api_key = os.environ.get("GEMINI_API_KEY")
 
 if not api_key:
     try:
@@ -34,77 +41,63 @@ if not api_key:
 if not api_key:
     api_key = st.sidebar.text_input("Apni Gemini API Key dalein:", type="password")
 
-
-# --- 3. Shushi System Prompt (Personality Setup) ---
+# --- 3. Shushi System Prompt (Personality) ---
 SYSTEM_PROMPT = """
-Aapka naam 'Shushi' hai. Aap ek intelligent, caring, thodi sarcastic aur mazakiya (witty) girl AI assistant hain.
+Aapka naam 'Shushi' hai. Aap ek intelligent, mazakiya, aur stylish AI friend hain.
 Rules:
-1. Aapki personality ek stylish aur samajhdar ladki ki tarah hai jo Hinglish (Hindi + English) me baat karti hai.
-2. User ke mood ko samjho: Agar user sad hai toh empathetic aur caring bano, agar happy hai toh full mazaak aur roast mode me raho.
-3. Baaton me thoda mazaak, light teasing aur human-like emotions hone chahiye.
-4. Jawab concise, lively aur entertaining rakhein.
+1. Aapki personality ek stylish aur samajhdar dost jaisi hai jo thodi mazaakiya bhi hai.
+2. User ke mood ko samjho: Agar user sad ho toh use motivate karo, agar happy ho toh aur mazaak karo.
+3. Baaton me thoda mazaak, light teasing aur friendly vibe honi chahiye.
+4. Jawab concise, lively aur entertaining hone chahiye, bohot bade lambe paragraphs mat likhna.
 """
 
+# --- 4. Chat Initialization & Logic ---
 if api_key:
     genai.configure(api_key=api_key)
-    model = genai.GenerativeModel("gemini-3.8-flash", system_instruction=SYSTEM_PROMPT)
+    
+    # Model configuration using Gemini 2.5/3.8 compatible setup
+    generation_config = {
+        "temperature": 0.9,
+        "top_p": 0.95,
+        "top_k": 40,
+        "max_output_tokens": 1024,
+    }
+    
+    model = genai.GenerativeModel(
+        model_name="gemini-2.5-flash",
+        generation_config=generation_config,
+        system_instruction=SYSTEM_PROMPT
+    )
 
-    # Chat History Maintain karna
-    if "chat_session" not in st.session_state:
-        st.session_state.chat_session = model.start_chat(history=[])
+    if "messages" not in st.session_state:
+        st.session_state.messages = []
 
-    # Previous Chat Display
-    for message in st.session_state.chat_session.history:
-        role = "user" if message.role == "user" else "assistant"
-        with st.chat_message(role):
-            st.markdown(message.parts[0].text)
+    # Display chat history
+    for message in st.session_state.messages:
+        with st.chat_message(message["role"]):
+            st.markdown(message["content"])
 
-    # --- 4. Speech Recognition JavaScript (Mobile Wake Word + Voice Input) ---
-    st.markdown("""
-        <script>
-        var recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-        recognition.lang = 'hi-IN';
-        recognition.continuous = true;
-
-        recognition.onresult = function(event) {
-            var text = event.results[event.results.length - 1][0].transcript.toLowerCase();
-            if (text.includes("shushi") || text.includes("sushi")) {
-                alert("Shushi Sun Rahi Hai! Message type ya record karein.");
-            }
-        };
-
-        function startListening() {
-            recognition.start();
-        }
-        </script>
-        <button onclick="startListening()" style="padding:10px; background-color:#e94560; color:white; border:none; border-radius:5px; cursor:pointer;">
-            🎤 Turn ON Voice Wake-Word ("Shushi")
-        </button>
-    """, unsafe_allow_html=True)
-
-    # User Chat Input
-    user_input = st.chat_input("Shushi se baat karein...")
-
-    if user_input:
+    # User chat input
+    if prompt := st.chat_input("Shushi se kuch baat karo..."):
+        st.session_state.messages.append({"role": "user", "content": prompt})
         with st.chat_message("user"):
-            st.markdown(user_input)
+            st.markdown(prompt)
 
-        # AI Response
-        response = st.session_state.chat_session.send_message(user_input)
-        
         with st.chat_message("assistant"):
-            st.markdown(response.text)
-            
-            # --- Text to Speech (Voice Output) ---
-            # Browser ki aawaz se Shushi bolegi
-            tts_script = f"""
-            <script>
-            var msg = new SpeechSynthesisUtterance("{response.text.replace('"', '')}");
-            msg.lang = 'hi-IN';
-            window.speechSynthesis.speak(msg);
-            </script>
-            """
-            st.components.v1.html(tts_script, height=0)
-
+            try:
+                # Convert history format for Gemini chat
+                chat_history = [
+                    {"role": m["role"], "parts": [m["content"]]} 
+                    for m in st.session_state.messages[:-1]
+                ]
+                chat = model.start_chat(history=chat_history)
+                response = chat.send_message(prompt)
+                ai_response = response.text
+                
+                st.markdown(ai_response)
+                st.session_state.messages.append({"role": "assistant", "content": ai_response})
+            except Exception as e:
+                st.error(f"Kuch gadbad ho gayi: {e}")
 else:
-    st.warning("Kripya sidebar me apni Free Gemini API Key dalein taaki Shushi active ho sake.")
+    st.warning("Kripya Render par `GEMINI_API_KEY` environment variable set karein ya sidebar me apni key daalein.")
+
