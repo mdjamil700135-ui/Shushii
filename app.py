@@ -84,7 +84,8 @@ if api_key:
         with st.chat_message("user"):
             st.markdown(prompt)
 
-        with st.chat_message("assistant"):
+        with st.chat_message("assistant", avatar="https://i.pinimg.com/736x/8f/25/11/8f25110e53a54b38d785a499d6fb602d.jpg"):
+
             try:
                 # Convert history format for Gemini chat
                 chat_history = [
