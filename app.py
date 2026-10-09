@@ -5,8 +5,8 @@ import google.generativeai as genai
 # Page Config
 st.set_page_config(
     page_title="Shushii - AI Friend",
-    page_icon="https://pin.it/2q5033AUS,
-    layout="centered"
+    page_icon="page_icon="https://i.pinimg.com/736x/8f/25/11/8f25110e53a54b38d785a499d6fb602d.jpg",
+
 )
 
 # Custom Styling
