@@ -22,8 +22,8 @@ if uploaded_photo is not None:
     st.sidebar.image(uploaded_photo, caption="Shushi", use_column_width=True)
 else:
     # Default Avatar
-    st.sidebar.image("https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500", caption="Shushi (Default Photo)", use_column_width=True
-api_key = os.environ.get("GEMINI_API_KEY")
+    st.sidebar.image("https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&auto=format&fit=crop&q=60", caption="Shushi")
+
 
 if not api_key:
     try:
