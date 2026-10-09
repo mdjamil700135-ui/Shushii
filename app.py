@@ -55,7 +55,7 @@ Rules:
 if api_key:
     genai.configure(api_key=api_key)
     
-    # Model configuration using Gemini 2.5/3.8 compatible setup
+    # Model configuration using Gemini 3.8 compatible setup
     generation_config = {
         "temperature": 0.9,
         "top_p": 0.95,
@@ -64,7 +64,7 @@ if api_key:
     }
     
     model = genai.GenerativeModel(
-        model_name="gemini-2.5-flash",
+        model_name="gemini-3.8-flash",
         generation_config=generation_config,
         system_instruction=SYSTEM_PROMPT
     )
