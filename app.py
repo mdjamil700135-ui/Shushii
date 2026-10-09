@@ -9,6 +9,12 @@ st.set_page_config(
     layout="centered",
 )
 
+# ==========================================
+# HINATA AVATAR CONFIGURATION
+# Yahan apni photo ka file name ya URL daal dein
+# ==========================================
+SHUSHII_AVATAR = "hinata.jpg"  # Example: "hinata.jpg" ya koi image ka link
+
 # Custom Styling (Shushii Vibe)
 st.markdown(
     """
@@ -40,7 +46,8 @@ groq_api_key = os.environ.get("GROQ_API_KEY")
 
 if not groq_api_key:
     st.error(
-        "Groq API Key nahi mili! Kripya Render ke Environment Variables me 'GROQ_API_KEY' set karein."
+        "Groq API Key nahi mili! Kripya Render ke Environment Variables me"
+        " 'GROQ_API_KEY' set karein."
     )
 else:
     client = Groq(api_key=groq_api_key)
@@ -57,9 +64,14 @@ else:
             }
         ]
 
-    # Display Chat History
+    # Display Chat History with Hinata Avatar
     for message in st.session_state.messages:
-        with st.chat_message(message["role"]):
+        avatar = (
+            SHUSHII_AVATAR
+            if message["role"] == "assistant"
+            else "https://api.iconify.design/lucide:user.svg"
+        )
+        with st.chat_message(message["role"], avatar=avatar):
             st.markdown(message["content"])
 
     # Future Voice Integration Placeholder
@@ -69,11 +81,13 @@ else:
     if prompt := st.chat_input("Shushi se kuch baat karo..."):
         # Add user message to state and display
         st.session_state.messages.append({"role": "user", "content": prompt})
-        with st.chat_message("user"):
+        with st.chat_message(
+            "user", avatar="https://api.iconify.design/lucide:user.svg"
+        ):
             st.markdown(prompt)
 
         # Generate Assistant response using Groq (Updated Model)
-        with st.chat_message("assistant"):
+        with st.chat_message("assistant", avatar=SHUSHII_AVATAR):
             message_placeholder = st.empty()
             message_placeholder.markdown("Shushii soch rahi hai... 🤔")
 
@@ -97,7 +111,8 @@ else:
 
                 # API Call to Groq with active model
                 chat_completion = client.chat.completions.create(
-                    model="llama-3.3-70b-versatile", messages=formatted_messages
+                    model="llama-3.3-70b-versatile",
+                    messages=formatted_messages,
                 )
 
                 ai_response = (
@@ -114,4 +129,5 @@ else:
             except Exception as e:
                 error_msg = f"Kuch gadbad ho gayi: {e}"
                 message_placeholder.markdown(error_msg)
+
 
