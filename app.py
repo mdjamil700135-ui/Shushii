@@ -1,115 +1,118 @@
 import os
 import streamlit as st
-import google.generativeai as genai
-from PIL import Image
+from groq import Groq
 
+# Page Config
 st.set_page_config(
     page_title="Shushii - AI Friend",
     page_icon="🌸",
-    layout="centered"
+    layout="centered",
 )
 
-# Hinata ki photo ko error-free load karne ke liye
-hinata_avatar = Image.open("9fc665b42fb26df41b551260b9e2c11c.jpg")
-
-
-# Chat message me avatar set karne ke liye yeh use hoga
-with st.chat_message("assistant", avatar=hinata_avatar):
-    st.write("Hey! Main Shushii hoon.")
-
-
-# Custom Styling
-st.markdown("""
-<style>
-    .main { background-color: #1a1a2e; color: #ffffff; }
-    .stTextInput > div > div > input { background-color: #16213e; color: #ffffff; }
-</style>
-""", unsafe_allow_html=True)
-
-st.title("💃 Shushi - Aapki Smart & Mazakiya AI Friend")
-
-# --- 1. Photo Upload & Sidebar Section ---
-st.sidebar.header("Shushi Ki Profile Photo")
-uploaded_photo = st.sidebar.file_uploader("Apni photo dalein", type=["jpg", "png", "jpeg"])
-
-if uploaded_photo is not None:
-    st.sidebar.image(uploaded_photo, caption="Shushi", use_container_width=True)
-else:
-    # Default Avatar
-    st.sidebar.image("https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&auto=format&fit=crop&q=60", caption="Shushi", use_container_width=True)
-
-# --- 2. API Key Automatic Fetch Logic ---
-api_key = os.environ.get("GEMINI_API_KEY")
-
-if not api_key:
-    try:
-        api_key = st.secrets["GEMINI_API_KEY"]
-    except:
-        pass
-
-if not api_key:
-    api_key = st.sidebar.text_input("Apni Gemini API Key dalein:", type="password")
-
-# --- 3. Shushi System Prompt (Personality) ---
-SYSTEM_PROMPT = """
-Aapka naam 'Shushi' hai. Aap ek intelligent, mazakiya, aur stylish AI friend hain.
-Rules:
-1. Aapki personality ek stylish aur samajhdar dost jaisi hai jo thodi mazaakiya bhi hai.
-2. User ke mood ko samjho: Agar user sad ho toh use motivate karo, agar happy ho toh aur mazaak karo.
-3. Baaton me thoda mazaak, light teasing aur friendly vibe honi chahiye.
-4. Jawab concise, lively aur entertaining hone chahiye, bohot bade lambe paragraphs mat likhna.
-"""
-
-# --- 4. Chat Initialization & Logic ---
-if api_key:
-    genai.configure(api_key=api_key)
-    
-    # Model configuration using Gemini 3.8 compatible setup
-    generation_config = {
-        "temperature": 0.9,
-        "top_p": 0.95,
-        "top_k": 40,
-        "max_output_tokens": 1024,
+# Custom Styling (Shushii Vibe)
+st.markdown(
+    """
+    <style>
+    .stApp {
+        background-color: #0e1117;
+        color: #ffffff;
     }
-    
-    model = genai.GenerativeModel(
-        model_name="gemini-3.5-flash",
-        generation_config=generation_config,
-        system_instruction=SYSTEM_PROMPT
+    .chat-header {
+        text-align: center;
+        font-family: sans-serif;
+        font-weight: bold;
+        color: #ff758c;
+        margin-bottom: 20px;
+    }
+    </style>
+""",
+    unsafe_allow_html=True,
+)
+
+# Header Title
+st.markdown(
+    "<h1 class='chat-header'>Aapki Smart & Mazakiya AI Friend</h1>",
+    unsafe_allow_html=True,
+)
+
+# Initialize Groq Client securely using environment variable
+groq_api_key = os.environ.get("GROQ_API_KEY")
+
+if not groq_api_key:
+    st.error(
+        "Groq API Key nahi mili! Kripya Render ke Environment Variables me 'GROQ_API_KEY' set karein."
     )
+else:
+    client = Groq(api_key=groq_api_key)
 
+    # Initialize Chat History
     if "messages" not in st.session_state:
-        st.session_state.messages = []
+        st.session_state.messages = [
+            {
+                "role": "assistant",
+                "content": (
+                    "Hey! Main Shushii hoon, aapki dost. Aaj kya baat"
+                    " karni hai?"
+                ),
+            }
+        ]
 
-    # Display chat history
+    # Display Chat History
     for message in st.session_state.messages:
         with st.chat_message(message["role"]):
             st.markdown(message["content"])
 
-    # User chat input
+    # Future Voice Integration Placeholder
+    # TODO: Future me yahan voice input / audio recording ka code add kiya ja sakega.
+
+    # User Input
     if prompt := st.chat_input("Shushi se kuch baat karo..."):
+        # Add user message to state and display
         st.session_state.messages.append({"role": "user", "content": prompt})
         with st.chat_message("user"):
             st.markdown(prompt)
 
-            
-    with st.chat_message("assistant", avatar=hinata_avatar):
-
+        # Generate Assistant response using Groq (Llama-3 model)
+        with st.chat_message("assistant"):
+            message_placeholder = st.empty()
+            message_placeholder.markdown("Shushii soch rahi hai... 🤔")
 
             try:
-                # Convert history format for Gemini chat
-                chat_history = [
-                    {"role": m["role"], "parts": [m["content"]]} 
-                    for m in st.session_state.messages[:-1]
+                # System prompt to give Shushii her personality
+                system_prompt = {
+                    "role": "system",
+                    "content": (
+                        "You are Shushii, a smart, witty, and friendly AI"
+                        " companion, inspired by anime characters. You speak"
+                        " in a cool mix of Hindi and English (Hinglish),"
+                        " friendly, casual, and sometimes humorous tone."
+                    ),
+                }
+
+                # Format messages for Groq API
+                formatted_messages = [system_prompt] + [
+                    {"role": m["role"], "content": m["content"]}
+                    for m in st.session_state.messages
                 ]
-                chat = model.start_chat(history=chat_history)
-                response = chat.send_message(prompt)
-                ai_response = response.text
-                
-                st.markdown(ai_response)
-                st.session_state.messages.append({"role": "assistant", "content": ai_response})
+
+                # API Call to Groq
+                chat_completion = client.chat.completions.create(
+                    model="llama3-70b-8192", messages=formatted_messages
+                )
+
+                ai_response = (
+                    chat_completion.choices[0].message.content
+                    or "Kuch samajh nahi aaya, phir se bolo na!"
+                )
+                message_placeholder.markdown(ai_response)
+
+                # Save assistant response to state
+                st.session_state.messages.append(
+                    {"role": "assistant", "content": ai_response}
+                )
+
             except Exception as e:
-                st.error(f"Kuch gadbad ho gayi: {e}")
-else:
-    st.warning("Kripya Render par `GEMINI_API_KEY` environment variable set karein ya sidebar me apni key daalein.")
+                error_msg = f"Kuch gadbad ho gayi: {e}"
+                message_placeholder.markdown(error_msg)
+
 
