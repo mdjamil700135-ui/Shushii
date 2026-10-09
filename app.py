@@ -1,23 +1,20 @@
 import os
 import streamlit as st
 import google.generativeai as genai
+from PIL import Image
 
 st.set_page_config(
     page_title="Shushii - AI Friend",
-    page_icon="hinata.jpg",
+    page_icon="🌸",
     layout="centered"
 )
 
-import os
-import streamlit as st
-import google.generativeai as genai
+# Hinata ki photo ko error-free load karne ke liye
+hinata_avatar = Image.open("9fc665b42fb26df41b551260b9e2c11c.jpg")
 
-st.set_page_config(
-    page_title="Shushii - AI Friend",
-    page_icon="https://i.pinimg.com/736x/8f/25/11/8f25110e53a54b38d785a499d6fb602d.jpg",
-    layout="centered"
-)
-
+# Chat message me avatar set karne ke liye yeh use hoga
+with st.chat_message("assistant", avatar=hinata_avatar):
+    st.write("Hey! Main Shushii hoon.")
 
 
 # Custom Styling
