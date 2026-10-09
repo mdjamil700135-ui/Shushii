@@ -24,8 +24,15 @@ else:
     # Default Avatar
     st.sidebar.image("https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500", caption="Shushi (Default Photo)", use_column_width=True)
 
-# --- 2. API Key Input ---
-api_key = st.sidebar.text_input("Apni Gemini API Key Daalein (Free):", type="password")
+import os
+
+# Render ke environment variable se key uthayega
+api_key = os.environ.get("GEMINI_API_KEY")
+
+# Agar Render par na mile tabhi sidebar me input maangega
+if not api_key:
+    api_key = st.sidebar.text_input("Apni Gemini API Key dalein:", type="password")
+
 
 # --- 3. Shushi System Prompt (Personality Setup) ---
 SYSTEM_PROMPT = """
