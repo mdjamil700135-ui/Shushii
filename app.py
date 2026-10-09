@@ -92,7 +92,8 @@ if api_key:
         with st.chat_message("user"):
             st.markdown(prompt)
 
-            with st.chat_message("assistant", avatar=hinata_avatar):
+            
+    with st.chat_message("assistant", avatar=hinata_avatar):
 
 
             try:
