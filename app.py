@@ -4,6 +4,16 @@ import google.generativeai as genai
 
 st.set_page_config(
     page_title="Shushii - AI Friend",
+    page_icon="hinata.jpg",
+    layout="centered"
+)
+
+import os
+import streamlit as st
+import google.generativeai as genai
+
+st.set_page_config(
+    page_title="Shushii - AI Friend",
     page_icon="https://i.pinimg.com/736x/8f/25/11/8f25110e53a54b38d785a499d6fb602d.jpg",
     layout="centered"
 )
@@ -84,7 +94,7 @@ if api_key:
         with st.chat_message("user"):
             st.markdown(prompt)
 
-        with st.chat_message("assistant", avatar="https://i.pinimg.com/736x/8f/25/11/8f25110e53a54b38d785a499d6fb602d.jpg"):
+        with st.chat_message("assistant", avatar="hinata.jpg"):
 
             try:
                 # Convert history format for Gemini chat
