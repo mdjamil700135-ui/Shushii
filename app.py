@@ -7,7 +7,7 @@ st.set_page_config(
     page_title="Shushii - AI Friend",
     page_icon="https://i.pinimg.com/736x/8f/25/11/8f25110e53a54b38d785a499d6fb602d.jpg",
     layout="centered"
-)
+
 
 
 # Custom Styling
