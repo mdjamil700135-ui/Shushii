@@ -72,7 +72,7 @@ else:
         with st.chat_message("user"):
             st.markdown(prompt)
 
-        # Generate Assistant response using Groq (Llama-3 model)
+        # Generate Assistant response using Groq (Updated Model)
         with st.chat_message("assistant"):
             message_placeholder = st.empty()
             message_placeholder.markdown("Shushii soch rahi hai... 🤔")
@@ -95,9 +95,9 @@ else:
                     for m in st.session_state.messages
                 ]
 
-                # API Call to Groq
+                # API Call to Groq with active model
                 chat_completion = client.chat.completions.create(
-                    ,model="llama-3.3-70b-versatile"messages=formatted_messages
+                    model="llama-3.3-70b-versatile", messages=formatted_messages
                 )
 
                 ai_response = (
@@ -114,5 +114,4 @@ else:
             except Exception as e:
                 error_msg = f"Kuch gadbad ho gayi: {e}"
                 message_placeholder.markdown(error_msg)
-
 
