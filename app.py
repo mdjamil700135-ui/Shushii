@@ -103,7 +103,7 @@ if api_key:
                     for m in st.session_state.messages[:-1]
                 ]
                 chat = model.start_chat(history=chat_history)
-                response = chat.send_message(prompt)
+                response = chat.send_message(contents=prompt)
                 ai_response = response.text
                 
                 st.markdown(ai_response)
