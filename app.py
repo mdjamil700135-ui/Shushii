@@ -183,5 +183,27 @@ if "messages" in st.session_state and st.session_state.messages:
         js_code = "<script>window.speechSynthesis.cancel(); var m = new SpeechSynthesisUtterance('" + safe_text + "'); m.lang = 'hi-IN'; m.pitch = 1.1; window.speechSynthesis.speak(m);</script>"
         st.components.v1.html(js_code, height=0)
 
+# ==========================================
+# 🔊 NATURAL HINDI VOICE ENGINE (END BLOCK)
+# ==========================================
+if "messages" in st.session_state and st.session_state.messages:
+    last_msg = st.session_state.messages[-1]
+    if last_msg["role"] == "assistant":
+        # Emojis aur symbols saaf karna
+        clean_t = re.sub(r'[^\w\s.,!?]', '', last_msg["content"])
+        safe_text = clean_t.replace('"', ' ').replace("'", ' ').replace('\n', ' ').strip()
+        
+        # Natural Hindi Speed (rate=0.95) & Pitch (1.1)
+        js_code = (
+            "<script>"
+            "window.speechSynthesis.cancel();"
+            "var m = new SpeechSynthesisUtterance('" + safe_text + "');"
+            "m.lang = 'hi-IN';"
+            "m.rate = 0.95;"
+            "m.pitch = 1.1;"
+            "window.speechSynthesis.speak(m);"
+            "</script>"
+        )
+        st.components.v1.html(js_code, height=0)
 
 
