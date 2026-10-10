@@ -123,14 +123,25 @@ else:
                 message_placeholder.markdown(error_msg)
                 
 # ==========================================
-# VN20261010_151638.mp4
+# 🔊 SHUSHII CUSTOM MP4 VOICE PLAYER
 # ==========================================
 if "messages" in st.session_state and len(st.session_state.messages) > 0:
     last_message = st.session_state.messages[-1]
     if last_message["role"] == "assistant":
-        # Yahan apni pasand ki audio file ka direct link daal do (.mp3 wala)
-        audio_url = "YOUR_DIRECT_AUDIO_LINK_HERE.mp3"
-        st.audio(audio_url, format="audio/mp3")
+        # 👇 YAHAN apni .mp4 file ka link paste karo (quotes ke andar)
+        audio_url = "https://your-uploaded-file-link.com/voice.mp4"
+
+        # Check only if url is changed
+        if "YOUR_DIRECT_AUDIO_LINK" not in audio_url:
+            st.components.v1.html(
+                f"""
+                <audio autoplay style="display:none;">
+                    <source src="{audio_url}" type="audio/mp4">
+                </audio>
+                """,
+                height=0,
+            )
+
 
 
 
