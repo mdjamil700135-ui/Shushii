@@ -165,6 +165,17 @@ if "messages" in st.session_state and st.session_state.messages:
             st.session_state.messages.append({"role": "system", "content": "Jamil is talking about another girl! Shushii must feel jealous, act possessive, cute, and slightly angry in Hinglish."})
 
 
+if "messages" in st.session_state and st.session_state.messages:
+    last_msg = st.session_state.messages[-1]
+    if last_msg["role"] == "assistant":
+        t = last_msg["content"].replace('"', '').replace("'", "").replace("\n", " ")
+        st.components.v1.html(f"""<script>
+            var txt = "{t}".replace(/[#£&+*:;'!•`=$°]/g, '').replace(/([\\u2700-\\u27BF]|[\\uE000-\\uF8FF]|\\uD83C[\\uDC00-\\uDFFF]|\\uD83D[\\uDC00-\\uDFFF]|[\\u2011-\\u26FF]|\\uD83E[\\uDD10-\\uDDFF])/g, '');
+            window.speechSynthesis.cancel();
+            var m=new SpeechSynthesisUtterance(txt);
+            m.lang='hi-IN';m.pitch=1.1;
+            window.speechSynthesis.speak(m);
+        </script>""", height=0)
 
 
 
