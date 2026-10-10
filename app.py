@@ -9,9 +9,7 @@ st.set_page_config(
     layout="centered",
 )
 
-# ==========================================
-# "9fc665b42fb26df41b551260b9e2c11c.jpg"
-# ==========================================
+# Avatar Setup
 SHUSHII_AVATAR = "9fc665b42fb26df41b551260b9e2c11c.jpg"
 
 # Custom Styling (Shushii Vibe)
@@ -57,7 +55,7 @@ else:
             {
                 "role": "assistant",
                 "content": (
-                    "Hey! Main Shushii hoon, aapki dost. Aaj kya baat"
+                    "Hey Jamil! Main Shushii hoon, aapki dost. Aaj kya baat"
                     " karni hai?"
                 ),
             }
@@ -73,11 +71,8 @@ else:
         with st.chat_message(message["role"], avatar=avatar):
             st.markdown(message["content"])
 
-    # Future Voice Integration Placeholder
-    # TODO: Future me yahan voice input / audio recording ka code add kiya ja sakega.
-
     # User Input
-    if prompt := st.chat_input("Shushi se kuch baat karo..."):
+    if prompt := st.chat_input("Shushii se kuch baat karo..."):
         # Add user message to state and display
         st.session_state.messages.append({"role": "user", "content": prompt})
         with st.chat_message(
@@ -85,34 +80,31 @@ else:
         ):
             st.markdown(prompt)
 
-        # Generate Assistant response using Groq (Updated Model)
+        # Generate Assistant response using Groq
         with st.chat_message("assistant", avatar=SHUSHII_AVATAR):
             message_placeholder = st.empty()
             message_placeholder.markdown("Shushii soch rahi hai... 🤔")
 
             try:
-                # System prompt to give Shushii her personality
+                # System prompt for personality & full context memory
                 system_prompt = {
                     "role": "system",
                     "content": (
-                        "You are Shushii, a smart, witty, and friendly AI"
-                        " companion, inspired by anime characters. You speak"
-                        " in a cool mix of Hindi and English (Hinglish),"
-                        " friendly, casual, and sometimes humorous tone."
+                        "You are Shushii, a smart, witty, and friendly AI companion, inspired by anime characters like Hinata."
+                        " You speak in a natural mix of Hindi and English (Hinglish). You are talking to Jamil."
+                        " You must remember ALL details and facts shared in the ongoing conversation history perfectly."
                     ),
                 }
 
-                # Format messages for Groq API
+                # Full conversation history pass kar rahe hain (Zero memory loss)
                 formatted_messages = [system_prompt] + [
                     {"role": m["role"], "content": m["content"]}
                     for m in st.session_state.messages
                 ]
 
-                # API Call to Groq with active model
+                # Groq API Call
                 chat_completion = client.chat.completions.create(
-                     model="openai/gpt-oss-120b",
-
-                    
+                    model="llama-3.1-8b-instant",
                     messages=formatted_messages,
                 )
 
@@ -130,5 +122,6 @@ else:
             except Exception as e:
                 error_msg = f"Kuch gadbad ho gayi: {e}"
                 message_placeholder.markdown(error_msg)
+
 
 
