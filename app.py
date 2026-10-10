@@ -177,18 +177,19 @@ if "messages" in st.session_state and st.session_state.messages:
             window.speechSynthesis.speak(m);
         </script>""", height=0)
 
-
 if "messages" in st.session_state and st.session_state.messages:
     last_msg = st.session_state.messages[-1]
     if last_msg["role"] == "assistant":
         t = last_msg["content"].replace('"', '').replace("'", "").replace("\n", " ")
-        st.components.v1.html(f"""<script>
-            var txt = "{t}".replace(/[\u{{1F000}}-\u{{1FAFF}}]|[\u{{2600}}-\u{{27BF}}]/gu, '').replace(/[#£&+*:;'!•`=$°]/g, '');
+        st.components.v1.html(fr"""<script>
+            var txt = "{t}".replace(/[\u0023\u00A3\u0026\u002B\u002A\u003A\u003B\u0027\u0021\u2022\u0060\u003D\u0024\u00B0]/g, '');
+            txt = txt.replace(/([\uD800-\uDBFF][\uDC00-\uDFFF])|[\u2600-\u27BF]/g, '');
             window.speechSynthesis.cancel();
             var m = new SpeechSynthesisUtterance(txt);
             m.lang = 'hi-IN'; m.pitch = 1.1;
             window.speechSynthesis.speak(m);
         </script>""", height=0)
+
 
 
 
