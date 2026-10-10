@@ -123,35 +123,41 @@ else:
                 message_placeholder.markdown(error_msg)
                 
 # ==========================================
-# 🔊 FAST DYNAMIC VOICE (NO FILE UPLOAD NEEDED)
+# 🔊 SHUSHii INSTANT BROWSER VOICE (100% WORKING)
 # ==========================================
 if "messages" in st.session_state and len(st.session_state.messages) > 0:
     last_message = st.session_state.messages[-1]
     if last_message["role"] == "assistant":
-        try:
-            import io
-            import base64
-            from gtts import gTTS
+        # Text me se quotes remove kar rahe hain taaki JS break na ho
+        clean_text = (
+            last_message["content"]
+            .replace('"', "")
+            .replace("'", "")
+            .replace("\n", " ")
+        )
 
-            # Dynamic voice generate ho rahi hai
-            tts = gTTS(text=last_message["content"], lang="hi")
-            sound_file = io.BytesIO()
-            tts.write_to_fp(sound_file)
-            sound_file.seek(0)
-
-            # Base64 convert karke autoplay kar rahe hain
-            b64 = base64.b64encode(sound_file.read()).decode()
+        # Inbuilt Browser Voice Speech JS Code
+        js_code = f"""
+        <script>
+            function speakText() {{
+                if ('speechSynthesis' in window) {{
+                    window.speechSynthesis.cancel(); // Purani aawaz ko stop karo
+                    
+                    var msg = new SpeechSynthesisUtterance("{clean_text}");
+                    msg.lang = 'hi-IN'; // Hindi/Hinglish accent
+                    msg.rate = 1.0;     // Speed
+                    msg.pitch = 1.1;    // Slightly cute pitch
+                    
+                    window.speechSynthesis.speak(msg);
+                }}
+            }}
             
-            st.components.v1.html(
-                f"""
-                <audio autoplay controls style="width: 100%;">
-                    <source src="data:audio/mp3;base64,{b64}" type="audio/mp3">
-                </audio>
-                """,
-                height=60,
-            )
-        except Exception as e:
-            pass
+            // Auto trigger on response
+            setTimeout(speakText, 300);
+        </script>
+        """
+        st.components.v1.html(js_code, height=0)
+
 
 
 
