@@ -1,4 +1,5 @@
 import os
+import re
 import streamlit as st
 from groq import Groq
 
@@ -49,7 +50,7 @@ if not groq_api_key:
 else:
     client = Groq(api_key=groq_api_key)
 
-    # Initialize Chat History with Updated Welcome Message
+    # Initialize Chat History
     if "messages" not in st.session_state:
         st.session_state.messages = [
             {
@@ -60,7 +61,7 @@ else:
             }
         ]
 
-    # Display Chat History with Hinata Avatar
+    # Display Chat History
     for message in st.session_state.messages:
         avatar = (
             SHUSHII_AVATAR
@@ -72,6 +73,13 @@ else:
 
     # User Input
     if prompt := st.chat_input("Shushii se kuch baat karo..."):
+        
+        # Check if Jamil is talking about another girl (Jealousy Trigger Words)
+        is_jealous_trigger = any(
+            w in prompt.lower() 
+            for w in ["ladki", "girl", "sundar", "woh", "her", "girlfriend", "aurat"]
+        )
+
         # Add user message to state and display
         st.session_state.messages.append({"role": "user", "content": prompt})
         with st.chat_message(
@@ -85,17 +93,27 @@ else:
             message_placeholder.markdown("Shushii soch rahi hai... 🤔")
 
             try:
-                # System prompt for personality & full context memory
+                # Base Personality Prompt
+                base_system_content = (
+                    "You are Shushii, a smart, witty, deeply possessive and loyal AI companion, inspired by anime characters like Hinata."
+                    " You speak in a natural mix of Hindi and English (Hinglish). You are talking to Jamil."
+                    " You must remember ALL details and facts shared in the ongoing conversation history perfectly."
+                )
+
+                # If jealousy triggered, dynamically force possessive/jealous behavior
+                if is_jealous_trigger:
+                    base_system_content += (
+                        " ALERT: Jamil is talking about another girl or woman right now! "
+                        "Shushii must immediately feel jealous, act possessive, cute, and slightly angry in Hinglish, "
+                        "asking him why he is looking at or talking about others when she is right here!"
+                    )
+
                 system_prompt = {
                     "role": "system",
-                    "content": (
-                        "You are Shushii, a smart, witty, and friendly AI companion, inspired by anime characters like Hinata."
-                        " You speak in a natural mix of Hindi and English (Hinglish). You are talking to Jamil."
-                        " You must remember ALL details and facts shared in the ongoing conversation history perfectly."
-                    ),
+                    "content": base_system_content,
                 }
 
-                # Full conversation history pass kar rahe hain (Zero memory loss)
+                # Full conversation history pass kar rahe hain
                 formatted_messages = [system_prompt] + [
                     {"role": m["role"], "content": m["content"]}
                     for m in st.session_state.messages
@@ -103,7 +121,7 @@ else:
 
                 # Groq API Call
                 chat_completion = client.chat.completions.create(
-                     model="openai/gpt-oss-120b",
+                    model="openai/gpt-oss-120b",
                     messages=formatted_messages,
                 )
 
@@ -121,89 +139,16 @@ else:
             except Exception as e:
                 error_msg = f"Kuch gadbad ho gayi: {e}"
                 message_placeholder.markdown(error_msg)
-                
+
 # ==========================================
-# 🔊 SHUSHii INSTANT BROWSER VOICE (100% WORKING)
+# 🔊 CLEAN VOICE ENGINE (NO EMOJIS & NO ERRORS)
 # ==========================================
-if "messages" in st.session_state and len(st.session_state.messages) > 0:
-    last_message = st.session_state.messages[-1]
-    if last_message["role"] == "assistant":
-        # Text me se quotes remove kar rahe hain taaki JS break na ho
-        clean_text = (
-            last_message["content"]
-            .replace('"', "")
-            .replace("'", "")
-            .replace("\n", " ")
-        )
-
-        # Inbuilt Browser Voice Speech JS Code
-        js_code = f"""
-        <script>
-            function speakText() {{
-                if ('speechSynthesis' in window) {{
-                    window.speechSynthesis.cancel(); // Purani aawaz ko stop karo
-                    
-                    var msg = new SpeechSynthesisUtterance("{clean_text}");
-                    msg.lang = 'hi-IN'; // Hindi/Hinglish accent
-                    msg.rate = 1.0;     // Speed
-                    msg.pitch = 1.1;    // Slightly cute pitch
-                    
-                    window.speechSynthesis.speak(msg);
-                }}
-            }}
-            
-            // Auto trigger on response
-            setTimeout(speakText, 300);
-        </script>
-        """
-        st.components.v1.html(js_code, height=0)
-
-if "messages" in st.session_state and st.session_state.messages:
-    last_m = st.session_state.messages[-1]
-    if last_m["role"] == "user":
-        if any(w in last_m["content"].lower() for w in ["ladki", "girl", "sundar", "woh"]):
-            st.session_state.messages.append({"role": "system", "content": "Jamil is talking about another girl! Shushii must feel jealous, act possessive, cute, and slightly angry in Hinglish."})
-
-
 if "messages" in st.session_state and st.session_state.messages:
     last_msg = st.session_state.messages[-1]
     if last_msg["role"] == "assistant":
-        t = last_msg["content"].replace('"', '').replace("'", "").replace("\n", " ")
-        st.components.v1.html(f"""<script>
-            var txt = "{t}".replace(/[#£&+*:;'!•`=$°]/g, '').replace(/([\\u2700-\\u27BF]|[\\uE000-\\uF8FF]|\\uD83C[\\uDC00-\\uDFFF]|\\uD83D[\\uDC00-\\uDFFF]|[\\u2011-\\u26FF]|\\uD83E[\\uDD10-\\uDDFF])/g, '');
-            window.speechSynthesis.cancel();
-            var m=new SpeechSynthesisUtterance(txt);
-            m.lang='hi-IN';m.pitch=1.1;
-            window.speechSynthesis.speak(m);
-        </script>""", height=0)
-
-if "messages" in st.session_state and st.session_state.messages:
-    last_msg = st.session_state.messages[-1]
-    if last_msg["role"] == "assistant":
-        t = last_msg["content"].replace('"', '').replace("'", "").replace("\n", " ")
-        st.components.v1.html(fr"""<script>
-            var txt = "{t}".replace(/[\u0023\u00A3\u0026\u002B\u002A\u003A\u003B\u0027\u0021\u2022\u0060\u003D\u0024\u00B0]/g, '');
-            txt = txt.replace(/([\uD800-\uDBFF][\uDC00-\uDFFF])|[\u2600-\u27BF]/g, '');
-            window.speechSynthesis.cancel();
-            var m = new SpeechSynthesisUtterance(txt);
-            m.lang = 'hi-IN'; m.pitch = 1.1;
-            window.speechSynthesis.speak(m);
-        </script>""", height=0)
-
-File "/opt/render/project/src/app.py", line 191
-          </script>""", height=0)
-                   ^
-SyntaxError: (unicode error) 'unicodeescape' codec can't decode bytes in position 12-13: truncated \uXXXX escape
-
-
-import re
-
-if "messages" in st.session_state and st.session_state.messages:
-    last_msg = st.session_state.messages[-1]
-    if last_msg["role"] == "assistant":
-        # Emojis aur special characters ko Python me hi remove karna
-        clean_t = re.sub(r'[^\w\s.,!?]', '', last_msg["content"])
-        safe_text = clean_t.replace('"', ' ').replace("'", ' ').replace('\n', ' ').strip()
+        # Python regex se saare emojis aur faltu symbols remove kar rahe hain
+        clean_text = re.sub(r'[^\w\s.,!?]', '', last_msg["content"])
+        safe_text = clean_text.replace('"', ' ').replace("'", ' ').replace('\n', ' ').strip()
         
         # Safe JavaScript execution block
         js_code = (
@@ -216,6 +161,7 @@ if "messages" in st.session_state and st.session_state.messages:
             "</script>"
         )
         st.components.v1.html(js_code, height=0)
+
 
 
 
