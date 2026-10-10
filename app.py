@@ -190,7 +190,10 @@ if "messages" in st.session_state and st.session_state.messages:
             window.speechSynthesis.speak(m);
         </script>""", height=0)
 
-
+File "/opt/render/project/src/app.py", line 191
+          </script>""", height=0)
+                   ^
+SyntaxError: (unicode error) 'unicodeescape' codec can't decode bytes in position 12-13: truncated \uXXXX escape
 
 
 
