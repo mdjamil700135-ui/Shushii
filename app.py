@@ -123,24 +123,23 @@ else:
                 message_placeholder.markdown(error_msg)
                 
 # ==========================================
-# VN20261010_151638.mp4
+# "VN20261010_151638.mp4"
 # ==========================================
 if "messages" in st.session_state and len(st.session_state.messages) > 0:
     last_message = st.session_state.messages[-1]
     if last_message["role"] == "assistant":
-        # 👇 YAHAN apni .mp4 file ka link paste karo (quotes ke andar)
-        audio_url = "https://your-uploaded-file-link.com/voice.mp4"
+        audio_url = "VN20261010_151638.mp4"
 
-        # Check only if url is changed
-        if "YOUR_DIRECT_AUDIO_LINK" not in audio_url:
-            st.components.v1.html(
-                f"""
-                <audio autoplay style="display:none;">
-                    <source src="{audio_url}" type="audio/mp4">
-                </audio>
-                """,
-                height=0,
-            )
+        st.components.v1.html(
+            f"""
+            <audio autoplay controls style="width: 100%;">
+                <source src="{audio_url}" type="audio/mp4">
+                Your browser does not support the audio element.
+            </audio>
+            """,
+            height=60,
+        )
+
 
 
 
