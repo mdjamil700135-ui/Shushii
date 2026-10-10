@@ -104,7 +104,7 @@ else:
 
                 # Groq API Call
                 chat_completion = client.chat.completions.create(
-                    model="llama-3.1-8b-instant",
+                    model="llama3-70b-8192",
                     messages=formatted_messages,
                 )
 
