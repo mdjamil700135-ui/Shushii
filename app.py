@@ -169,6 +169,19 @@ if "messages" in st.session_state and st.session_state.messages:
         
         js_code = "<script>window.speechSynthesis.cancel(); var m = new SpeechSynthesisUtterance('" + safe_text + "'); m.lang = 'hi-IN'; m.pitch = 1.1; window.speechSynthesis.speak(m);</script>"
         st.components.v1.html(js_code, height=0)
+# ==========================================
+# 🔊 SHUSHII VOICE ENGINE (END BLOCK)
+# ==========================================
+if "messages" in st.session_state and st.session_state.messages:
+    last_msg = st.session_state.messages[-1]
+    if last_msg["role"] == "assistant":
+        # Emojis aur special characters ko Python me hi khatam karna
+        clean_t = re.sub(r'[^\w\s.,!?]', '', last_msg["content"])
+        safe_text = clean_t.replace('"', ' ').replace("'", ' ').replace('\n', ' ').strip()
+        
+        # Zero syntax error safe JS execution
+        js_code = "<script>window.speechSynthesis.cancel(); var m = new SpeechSynthesisUtterance('" + safe_text + "'); m.lang = 'hi-IN'; m.pitch = 1.1; window.speechSynthesis.speak(m);</script>"
+        st.components.v1.html(js_code, height=0)
 
 
 
