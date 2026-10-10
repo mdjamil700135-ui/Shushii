@@ -12,7 +12,7 @@ st.set_page_config(
 # ==========================================
 # 9fc665b42fb26df41b551260b9e2c11c.jpg
 # ==========================================
-SHUSHII_AVATAR = "hinata.jpg"  # Example: "hinata.jpg" ya koi image ka link
+SHUSHII_AVATAR = "9fc665b42fb26df41b551260b9e2c11c.jpg"
 
 # Custom Styling (Shushii Vibe)
 st.markdown(
