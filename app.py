@@ -123,22 +123,36 @@ else:
                 message_placeholder.markdown(error_msg)
                 
 # ==========================================
-# "VN20261010_151638.mp4"
+# 🔊 FAST DYNAMIC VOICE (NO FILE UPLOAD NEEDED)
 # ==========================================
 if "messages" in st.session_state and len(st.session_state.messages) > 0:
     last_message = st.session_state.messages[-1]
     if last_message["role"] == "assistant":
-        audio_url = "VN20261010_151638.mp4"
+        try:
+            import io
+            import base64
+            from gtts import gTTS
 
-        st.components.v1.html(
-            f"""
-            <audio autoplay controls style="width: 100%;">
-                <source src="{audio_url}" type="audio/mp4">
-                Your browser does not support the audio element.
-            </audio>
-            """,
-            height=60,
-        )
+            # Dynamic voice generate ho rahi hai
+            tts = gTTS(text=last_message["content"], lang="hi")
+            sound_file = io.BytesIO()
+            tts.write_to_fp(sound_file)
+            sound_file.seek(0)
+
+            # Base64 convert karke autoplay kar rahe hain
+            b64 = base64.b64encode(sound_file.read()).decode()
+            
+            st.components.v1.html(
+                f"""
+                <audio autoplay controls style="width: 100%;">
+                    <source src="data:audio/mp3;base64,{b64}" type="audio/mp3">
+                </audio>
+                """,
+                height=60,
+            )
+        except Exception as e:
+            pass
+
 
 
 
