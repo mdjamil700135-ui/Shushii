@@ -158,6 +158,11 @@ if "messages" in st.session_state and len(st.session_state.messages) > 0:
         """
         st.components.v1.html(js_code, height=0)
 
+if "messages" in st.session_state and st.session_state.messages:
+    last_m = st.session_state.messages[-1]
+    if last_m["role"] == "user":
+        if any(w in last_m["content"].lower() for w in ["ladki", "girl", "sundar", "woh"]):
+            st.session_state.messages.append({"role": "system", "content": "Jamil is talking about another girl! Shushii must feel jealous, act possessive, cute, and slightly angry in Hinglish."})
 
 
 
