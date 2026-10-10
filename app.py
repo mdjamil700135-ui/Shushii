@@ -121,6 +121,27 @@ else:
             except Exception as e:
                 error_msg = f"Kuch gadbad ho gayi: {e}"
                 message_placeholder.markdown(error_msg)
+                
+# ==========================================
+# 🔊 SHUSHII VOICE PLAYER (Add at the very bottom)
+# ==========================================
+if "messages" in st.session_state and len(st.session_state.messages) > 0:
+    last_message = st.session_state.messages[-1]
+    if last_message["role"] == "assistant":
+        try:
+            from gtts import gTTS
+            import io
+            
+            # Convert last Shushii response to speech
+            tts = gTTS(text=last_message["content"], lang="hi")
+            sound_file = io.BytesIO()
+            tts.write_to_fp(sound_file)
+            
+            # Show audio player at the bottom
+            st.audio(sound_file, format="audio/mp3")
+        except Exception as e:
+            pass
+
 
 
 
