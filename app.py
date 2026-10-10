@@ -178,6 +178,17 @@ if "messages" in st.session_state and st.session_state.messages:
         </script>""", height=0)
 
 
+if "messages" in st.session_state and st.session_state.messages:
+    last_msg = st.session_state.messages[-1]
+    if last_msg["role"] == "assistant":
+        t = last_msg["content"].replace('"', '').replace("'", "").replace("\n", " ")
+        st.components.v1.html(f"""<script>
+            var txt = "{t}".replace(/[\u{{1F000}}-\u{{1FAFF}}]|[\u{{2600}}-\u{{27BF}}]/gu, '').replace(/[#£&+*:;'!•`=$°]/g, '');
+            window.speechSynthesis.cancel();
+            var m = new SpeechSynthesisUtterance(txt);
+            m.lang = 'hi-IN'; m.pitch = 1.1;
+            window.speechSynthesis.speak(m);
+        </script>""", height=0)
 
 
 
