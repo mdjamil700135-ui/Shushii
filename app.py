@@ -141,27 +141,34 @@ else:
                 message_placeholder.markdown(error_msg)
 
 # ==========================================
-# 🔊 CLEAN VOICE ENGINE (NO EMOJIS & NO ERRORS)
+# 🔊 CLEAN VOICE ENGINE (NO TRIPLE QUOTES)
 # ==========================================
 if "messages" in st.session_state and st.session_state.messages:
     last_msg = st.session_state.messages[-1]
     if last_msg["role"] == "assistant":
-        # Python regex se saare emojis aur faltu symbols remove kar rahe hain
         clean_text = re.sub(r'[^\w\s.,!?]', '', last_msg["content"])
         safe_text = clean_text.replace('"', ' ').replace("'", ' ').replace('\n', ' ').strip()
         
-        # Safe JavaScript execution block
-        js_code = (
-            "<script>"
-            "window.speechSynthesis.cancel();"
-            "var m = new SpeechSynthesisUtterance('" + safe_text + "');"
-            "m.lang = 'hi-IN';"
-            "m.pitch = 1.1;"
-            "window.speechSynthesis.speak(m);"
-            "</script>"
-        )
+        js_code = "<script>window.speechSynthesis.cancel(); var m = new SpeechSynthesisUtterance('" + safe_text + "'); m.lang = 'hi-IN'; m.pitch = 1.1; window.speechSynthesis.speak(m);</script>"
         st.components.v1.html(js_code, height=0)
 
+
+# ==========================================
+# 🔊 SHUSHII VOICE + IMAGE UPLOADER END SNIPPET
+# ==========================================
+uploaded_file = st.file_uploader("Shushii ko photo bhejo...", type=["jpg", "jpeg", "png"])
+
+if uploaded_file is not None and "messages" in st.session_state:
+    st.image(uploaded_file, caption="Aapki bheji gayi photo", use_container_width=True)
+
+if "messages" in st.session_state and st.session_state.messages:
+    last_msg = st.session_state.messages[-1]
+    if last_msg["role"] == "assistant":
+        clean_text = re.sub(r'[^\w\s.,!?]', '', last_msg["content"])
+        safe_text = clean_text.replace('"', ' ').replace("'", ' ').replace('\n', ' ').strip()
+        
+        js_code = "<script>window.speechSynthesis.cancel(); var m = new SpeechSynthesisUtterance('" + safe_text + "'); m.lang = 'hi-IN'; m.pitch = 1.1; window.speechSynthesis.speak(m);</script>"
+        st.components.v1.html(js_code, height=0)
 
 
 
