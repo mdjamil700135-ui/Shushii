@@ -49,14 +49,13 @@ if not groq_api_key:
 else:
     client = Groq(api_key=groq_api_key)
 
-    # Initialize Chat History
+    # Initialize Chat History with Updated Welcome Message
     if "messages" not in st.session_state:
         st.session_state.messages = [
             {
                 "role": "assistant",
                 "content": (
-                    "Hey Jamil! Main Shushii hoon, aapki dost. Aaj kya baat"
-                    " karni hai?"
+                    "Ji Jamil! Aaj kesa man hai, shant ho na? Aaj kesa din raha aapka?"
                 ),
             }
         ]
@@ -122,6 +121,7 @@ else:
             except Exception as e:
                 error_msg = f"Kuch gadbad ho gayi: {e}"
                 message_placeholder.markdown(error_msg)
+
 
 
 
